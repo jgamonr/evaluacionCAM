@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Evaluación de Instructores y Monitores</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+    }
+
+    .carousel {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      animation: fadeCarousel 24s infinite;
+    }
+
+    .slide:nth-child(1) {
+      background-image: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80");
+      animation-delay: 0s;
+    }
+
+    .slide:nth-child(2) {
+      background-image: url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80");
+      animation-delay: 6s;
+    }
+
+    .slide:nth-child(3) {
+      background-image: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80");
+      animation-delay: 12s;
+    }
+
+    .slide:nth-child(4) {
+      background-image: url("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80");
+      animation-delay: 18s;
+    }
+
+    @keyframes fadeCarousel {
+      0% {
+        opacity: 0;
+        transform: scale(1);
+      }
+
+      8% {
+        opacity: 1;
+      }
+
+      25% {
+        opacity: 1;
+        transform: scale(1.08);
+      }
+
+      35% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        rgba(0, 0, 0, 0.45),
+        rgba(0, 0, 0, 0.78)
+      );
+      z-index: -1;
+    }
+
+    .container {
+      min-height: 100vh;
+      width: 100%;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 780px;
+      padding: 50px 38px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+      animation: aparecer 1.1s ease forwards;
+    }
+
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: translateY(28px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .badge {
+      display: inline-block;
+      margin-bottom: 22px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 0.9rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: clamp(2.1rem, 6vw, 4.3rem);
+      line-height: 1.08;
+      margin-bottom: 22px;
+      font-weight: 800;
+    }
+
+    p {
+      font-size: clamp(1rem, 2.5vw, 1.35rem);
+      line-height: 1.6;
+      max-width: 650px;
+      margin: 0 auto 28px;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .info-box {
+      margin: 24px auto 28px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .loader {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.25);
+      overflow: hidden;
+      margin: 28px auto 16px;
+    }
+
+    .loader-bar {
+      height: 100%;
+      width: 0%;
+      background: #ffffff;
+      animation: cargar 7s linear forwards;
+    }
+
+    @keyframes cargar {
+      from {
+        width: 0%;
+      }
+
+      to {
+        width: 100%;
+      }
+    }
+
+    .redirect-text {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .manual-link {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      color: #111;
+      background: #fff;
+      text-decoration: none;
+      font-weight: 800;
+      transition: all 0.3s ease;
+    }
+
+    .manual-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 35px rgba(255, 255, 255, 0.28);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 18px;
+      }
+
+      .card {
+        padding: 38px 24px;
+        border-radius: 24px;
+      }
+
+      .badge {
+        font-size: 0.78rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 34px 20px;
+      }
+
+      .manual-link {
+        width: 100%;
+        padding: 15px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="carousel">
+    <div class="slide"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+  </div>
+
+  <div class="overlay"></div>
+
+  <main class="container">
+    <section class="card">
+
+      <div class="badge">Evaluación del día</div>
+
+      <h1>Evalúa a tus instructores y monitores</h1>
+
+      <p>
+        Tu opinión es muy importante para mejorar la calidad de nuestras clases,
+        actividades y experiencias en campo.
+      </p>
+
+      <div class="info-box">
+        A continuación serás dirigido al formulario donde podrás evaluar
+        a los instructores y monitores que impartieron la clase el día de hoy.
+      </div>
+
+      <div class="loader">
+        <div class="loader-bar"></div>
+      </div>
+
+      <div class="redirect-text">
+        Redireccionando automáticamente al formulario de evaluación...
+      </div>
+
+      <a 
+        class="manual-link" 
+        href="https://forms.gle/H9fypXKyHEMWV7XL8"
+      >
+        Ir al formulario ahora
+      </a>
+
+    </section>
+  </main>
+
+  <script>
+    const formularioEvaluacion = "https://forms.gle/H9fypXKyHEMWV7XL8";
+
+    setTimeout(() => {
+      window.location.href = formularioEvaluacion;
+    }, 7000);
+  </script>
+
+</body>
+</html>
