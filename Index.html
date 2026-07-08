@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Turistas - Camping San Pedro Mártir</title>
+  <style>
+    :root {
+      --verde: #2f6b3f;
+      --verde-oscuro: #12351f;
+      --verde-suave: #e8f5ec;
+      --beige: #f6f0e5;
+      --arena: #e4d4b7;
+      --texto: #243024;
+      --rojo: #b23b2e;
+      --dorado: #d89a1c;
+      --glass: rgba(255, 255, 255, 0.88);
+      --shadow: 0 18px 48px rgba(8, 35, 18, 0.22);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { min-height: 100%; scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--texto);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+      background:
+        linear-gradient(135deg, rgba(18,53,31,0.88), rgba(47,107,63,0.55)),
+        url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80") center/cover fixed no-repeat;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255,255,255,0.18), transparent 24%),
+        radial-gradient(circle at 90% 18%, rgba(216,154,28,0.16), transparent 22%),
+        linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.06));
+      z-index: -1;
+    }
+
+    header {
+      margin: 24px auto 0;
+      max-width: 980px;
+      color: white;
+      padding: 34px 22px;
+      text-align: center;
+      border-radius: 26px;
+      background:
+        linear-gradient(135deg, rgba(18,53,31,0.92), rgba(47,107,63,0.78)),
+        url("https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.22);
+      overflow: hidden;
+      position: relative;
+    }
+
+    header::after {
+      content: "🏕️";
+      position: absolute;
+      right: 24px;
+      bottom: 18px;
+      font-size: 46px;
+      opacity: 0.28;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: 0.3px;
+      text-shadow: 0 2px 14px rgba(0,0,0,0.25);
+    }
+
+    header p { margin: 6px 0; font-size: 16px; }
+
+    .header-pill {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.32);
+      backdrop-filter: blur(6px);
+      font-weight: bold;
+    }
+
+    main {
+      max-width: 980px;
+      margin: 24px auto;
+      padding: 0 16px 44px;
+    }
+
+    .intro,
+    fieldset,
+    .thank-you-card {
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .intro {
+      border-left: 9px solid var(--dorado);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 220px;
+      height: 100%;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.62)),
+        url("https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=900&q=80") center/cover no-repeat;
+      opacity: 0.28;
+    }
+
+    .intro > * { position: relative; z-index: 1; }
+    .intro strong { color: var(--verde-oscuro); }
+
+    .intro h2 {
+      margin: 0 0 10px;
+      color: var(--verde-oscuro);
+      font-size: 24px;
+    }
+
+    legend {
+      background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+      color: white;
+      padding: 9px 16px;
+      border-radius: 999px;
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: 0 6px 18px rgba(18,53,31,0.25);
+    }
+
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+    .full { grid-column: 1 / -1; }
+
+    label { display: block; font-weight: bold; margin-bottom: 6px; }
+
+    .hint {
+      display: block;
+      font-size: 12px;
+      font-weight: normal;
+      color: #586058;
+      margin-top: 3px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(47,107,63,0.22);
+      border-radius: 13px;
+      padding: 11px 12px;
+      font-size: 15px;
+      background: rgba(255,255,255,0.95);
+      color: var(--texto);
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--verde);
+      box-shadow: 0 0 0 4px rgba(47,107,63,0.14);
+    }
+
+    textarea { min-height: 88px; resize: vertical; }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      margin-top: 8px;
+    }
+
+    .check-item,
+    .radio-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-weight: normal;
+      margin: 6px 0;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.56);
+      border-radius: 12px;
+    }
+
+    .check-item input,
+    .radio-row input {
+      width: auto;
+      margin-top: 3px;
+    }
+
+    .notice {
+      background: rgba(255, 248, 232, 0.92);
+      border: 1px solid #e8c46c;
+      border-left: 6px solid var(--dorado);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .file-note { font-size: 12px; color: #586058; margin-top: 6px; }
+
+    .danger {
+      background: rgba(255, 241, 239, 0.92);
+      border-color: #e9aaa2;
+      border-left-color: var(--rojo);
+    }
+
+    .section-note { margin: 0 0 16px; color: #4a554a; font-size: 14px; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 22px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+      color: white;
+    }
+
+    .secondary {
+      background: var(--arena);
+      color: var(--texto);
+    }
+
+    .primary:disabled,
+    .secondary:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #status {
+      display: none;
+      margin-top: 16px;
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: bold;
+    }
+
+    #status.ok {
+      display: block;
+      background: #e8f6ec;
+      color: #1d5c2d;
+      border: 1px solid #92cf9e;
+    }
+
+    #status.error {
+      display: block;
+      background: #fdebea;
+      color: #8f241b;
+      border: 1px solid #f0a4a0;
+    }
+
+    .required { color: var(--rojo); }
+
+    .thank-you-page {
+      display: none;
+      min-height: 70vh;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .thank-you-card {
+      max-width: 780px;
+      text-align: center;
+      padding: 34px 28px;
+    }
+
+    .thank-you-card h2 {
+      margin: 0 0 12px;
+      color: var(--verde-oscuro);
+      font-size: clamp(28px, 4vw, 42px);
+    }
+
+    .thank-you-card .folio {
+      display: inline-block;
+      margin: 12px 0;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--verde-suave);
+      color: var(--verde-oscuro);
+      font-weight: bold;
+    }
+
+    @media (max-width: 760px) {
+      header { margin: 12px 12px 0; border-radius: 20px; }
+      .grid, .check-grid { grid-template-columns: 1fr; }
+      main { margin-top: 14px; }
+      .intro::after { display: none; }
+    }
+
+    @media print {
+      body { background: white; }
+      .actions, #status, .thank-you-page { display: none !important; }
+      fieldset, .intro { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Registro de Turistas</h1>
+    <p><strong><?= evento ?></strong></p>
+    <p><?= lugar ?> · <?= fechaEvento ?></p>
+    <p class="header-pill">Salida: <?= fechaSalida ?> · <?= horaSalida ?></p>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Bienvenida al evento</h2>
+      <p>
+        ¡Bienvenido/a al campamento en <strong>San Pedro Mártir</strong>! Nos dará mucho gusto compartir
+        esta experiencia contigo, disfrutar del parque, convivir al aire libre y recorrer sus paisajes con responsabilidad.
+      </p>
+      <p>
+        Durante el evento buscaremos disfrutar de la naturaleza mientras cuidamos el medio ambiente:
+        respetaremos los senderos, evitaremos dejar basura, reduciremos el uso de desechables y seguiremos
+        las indicaciones para generar el menor impacto posible en el entorno.
+      </p>
+      <p>
+        Este formulario nos ayudará a organizar mejor la logística, conocer información importante de cada
+        turista, prevenir riesgos y brindar una experiencia más segura y ordenada. Al terminar tu registro,
+        recibirás por correo las indicaciones generales del campamento.
+      </p>
+      <p>
+        <strong>Salida programada:</strong> <?= fechaSalida ?> a las <?= horaSalida ?>.
+        El punto de encuentro será <strong><?= puntoEncuentro ?></strong> y se confirmará por el grupo.
+      </p>
+      <p>
+        Las rutas al <strong>Mirador de Torre de Piedra</strong> y al <strong>Mirador El Altar</strong>
+        son actividades opcionales. Quienes no quieran o no puedan participar pueden permanecer en el
+        área de campamento disfrutando del parque.
+      </p>
+    </section>
+
+    <form id="registroForm">
+      <fieldset>
+        <legend>1. Datos generales del turista</legend>
+        <div class="grid">
+          <div>
+            <label>Nombre completo <span class="required">*</span></label>
+            <input name="nombreCompleto" required autocomplete="name">
+          </div>
+          <div>
+            <label>Edad <span class="required">*</span></label>
+            <input name="edad" type="number" min="1" max="100" required>
+          </div>
+          <div>
+            <label>Fecha de nacimiento</label>
+            <input name="fechaNacimiento" type="date">
+          </div>
+          <div>
+            <label>Teléfono <span class="required">*</span></label>
+            <input name="telefono" type="tel" required autocomplete="tel">
+          </div>
+          <div>
+            <label>Correo electrónico <span class="required">*</span></label>
+            <input name="correo" type="email" required autocomplete="email">
+          </div>
+          <div>
+            <label>Ciudad / procedencia</label>
+            <input name="procedencia" placeholder="Ej. Tijuana, Ensenada, Mexicali">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Contacto de emergencia</legend>
+        <div class="grid">
+          <div>
+            <label>Nombre del contacto de emergencia <span class="required">*</span></label>
+            <input name="contactoEmergencia" required>
+          </div>
+          <div>
+            <label>Parentesco o relación <span class="required">*</span></label>
+            <input name="parentescoEmergencia" required placeholder="Ej. esposa, padre, hermana, amigo">
+          </div>
+          <div>
+            <label>Teléfono de emergencia <span class="required">*</span></label>
+            <input name="telefonoEmergencia" type="tel" required>
+          </div>
+          <div>
+            <label>Teléfono alterno</label>
+            <input name="telefonoEmergenciaAlt" type="tel">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Información médica y alimentaria</legend>
+        <p class="section-note">Esta información ayuda a prevenir riesgos y a actuar mejor ante una emergencia.</p>
+        <div class="grid">
+          <div class="full">
+            <label>Alergias <span class="required">*</span>
+              <span class="hint">Alimentos, medicamentos, insectos, látex, polvo, etc. Si no tiene, escriba “Ninguna”.</span>
+            </label>
+            <textarea name="alergias" required></textarea>
+          </div>
+          <div class="full">
+            <label>Medicamentos que toma actualmente
+              <span class="hint">Incluya dosis u horario si es importante. Si no toma, escriba “Ninguno”.</span>
+            </label>
+            <textarea name="medicamentos"></textarea>
+          </div>
+          <div class="full">
+            <label>Padecimientos o condiciones médicas relevantes</label>
+            <textarea name="padecimientos" placeholder="Ej. diabetes, presión alta, asma, epilepsia, ansiedad, problemas cardiacos, etc."></textarea>
+          </div>
+          <div class="full">
+            <label>Lesiones recientes o limitaciones físicas</label>
+            <textarea name="lesiones" placeholder="Ej. rodilla, tobillo, espalda, dificultad para caminar pendientes, etc."></textarea>
+          </div>
+          <div class="full">
+            <label>Restricciones alimentarias</label>
+            <textarea name="restriccionesAlimentarias" placeholder="Ej. vegetariano, sin lácteos, sin gluten, no picante, etc."></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>4. Condición física y experiencia</legend>
+        <div class="grid">
+          <div>
+            <label>Condición física general <span class="required">*</span></label>
+            <select name="condicionFisica" required>
+              <option value="">Seleccionar</option>
+              <option>Buena: camino o hago ejercicio con regularidad</option>
+              <option>Regular: puedo caminar, pero no hago ejercicio constante</option>
+              <option>Baja: me canso fácilmente o tengo poca actividad</option>
+              <option>Requiero valoración especial antes de caminar</option>
+            </select>
+          </div>
+          <div>
+            <label>Experiencia en senderismo <span class="required">*</span></label>
+            <select name="experienciaSenderismo" required>
+              <option value="">Seleccionar</option>
+              <option>Sin experiencia</option>
+              <option>Básica: rutas cortas y sencillas</option>
+              <option>Intermedia: rutas con desnivel o varias horas</option>
+              <option>Avanzada: rutas largas o terreno exigente</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>5. Participación en rutas opcionales</legend>
+        <div class="notice">
+          Las caminatas son opcionales. Cada turista puede elegir una, ambas o ninguna.
+          Quienes no participen podrán permanecer en el área de campamento.
+        </div>
+        <div class="grid">
+          <div>
+            <label>Ruta 1: Mirador de Torre de Piedra <span class="required">*</span></label>
+            <select name="rutaTorrePiedra" required>
+              <option value="">Seleccionar</option>
+              <option>Sí participo</option>
+              <option>No participo</option>
+              <option>Por confirmar</option>
+            </select>
+          </div>
+          <div>
+            <label>Ruta 2: Mirador El Altar <span class="required">*</span></label>
+            <select name="rutaAltar" required>
+              <option value="">Seleccionar</option>
+              <option>Sí participo</option>
+              <option>No participo</option>
+              <option>Por confirmar</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>En caso de no participar en alguna ruta, ¿permanecerá en campamento?</label>
+            <select name="permanecerCampamento">
+              <option value="">Seleccionar</option>
+              <option>Sí, me quedaré en el área de campamento</option>
+              <option>No aplica, participaré en las rutas</option>
+              <option>Lo confirmaré después</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>6. Equipo de camping</legend>
+        <div class="grid">
+          <div class="full">
+            <label>¿Cuenta con equipo completo de camping? <span class="required">*</span></label>
+            <select name="equipoCamping" required>
+              <option value="">Seleccionar</option>
+              <option>Sí, cuento con equipo completo</option>
+              <option>Parcial, me falta equipo</option>
+              <option>No cuento con equipo</option>
+              <option>Compartiré equipo con otra persona</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Equipo de camping confirmado</label>
+            <div class="check-grid">
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Casa de campaña"> Casa de campaña</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Sleeping o bolsa de dormir"> Sleeping o bolsa de dormir</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Colchón, aislante o sleeping pad"> Colchón, aislante o sleeping pad</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Lámpara frontal o de mano"> Lámpara frontal o de mano</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Termo para café"> Termo para café</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Botella con tapa para agua"> Botella con tapa para agua</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Silla de camping"> Silla de camping</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Artículos de limpieza personal"> Artículos de limpieza personal</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Ropa térmica o chamarra"> Ropa térmica o chamarra</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCamping" value="Gorra o sombrero para sol"> Gorra o sombrero para sol</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>7. Equipo para caminata / senderismo</legend>
+        <div class="grid">
+          <div>
+            <label>¿Cuenta con equipo completo para caminata? <span class="required">*</span></label>
+            <select name="equipoCaminata" required>
+              <option value="">Seleccionar</option>
+              <option>Sí, cuento con equipo completo</option>
+              <option>Parcial, me falta equipo</option>
+              <option>No cuento con equipo</option>
+              <option>No participaré en rutas</option>
+            </select>
+          </div>
+          <div>
+            <label>Calzado para sendero <span class="required">*</span></label>
+            <select name="calzadoSendero" required>
+              <option value="">Seleccionar</option>
+              <option>Botas de senderismo</option>
+              <option>Tenis de senderismo o trail</option>
+              <option>Tenis cómodos con buena suela</option>
+              <option>No cuento con calzado adecuado</option>
+              <option>No participaré en rutas</option>
+            </select>
+          </div>
+          <div>
+            <label>Para tardes de campamento</label>
+            <select name="calzadoCampamento">
+              <option value="">Seleccionar</option>
+              <option>Llevaré tenis cómodos</option>
+              <option>Llevaré sandalias</option>
+              <option>Llevaré ambos</option>
+              <option>No confirmado</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Equipo de caminata confirmado</label>
+            <div class="check-grid">
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Mochila pequeña de día"> Mochila pequeña de día</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Agua suficiente para ruta"> Agua suficiente para ruta</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Snack o alimento de marcha"> Snack o alimento de marcha</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Bloqueador solar"> Bloqueador solar</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Gorra, sombrero o buff"> Gorra, sombrero o buff</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Lentes de sol"> Lentes de sol</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Chamarra ligera o rompevientos"> Chamarra ligera o rompevientos</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Impermeable o poncho"> Impermeable o poncho</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Bastones de trekking"> Bastones de trekking</label>
+              <label class="check-item"><input type="checkbox" name="listaEquipoCaminata" value="Medicamentos personales"> Medicamentos personales</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>8. Traslado y logística</legend>
+        <div class="notice">
+          El traslado se realizará en panel Econoline con aire acondicionado, internet satelital y refrigerador con bebidas a bordo.
+          La panel cuenta con remolque para llevar la mayor parte del equipo y equipaje.<br>
+          <strong>Salida programada:</strong> <?= fechaSalida ?> a las <?= horaSalida ?>. Punto de encuentro: <?= puntoEncuentro ?>.
+        </div>
+        <div class="grid">
+          <div>
+            <label>¿Requiere traslado en panel Econoline? <span class="required">*</span></label>
+            <select name="requiereTraslado" required>
+              <option value="">Seleccionar</option>
+              <option>Sí requiero traslado</option>
+              <option>No, llegaré por mi cuenta</option>
+              <option>Por confirmar</option>
+            </select>
+          </div>
+          <div>
+            <label>Puntualidad en punto de encuentro <span class="required">*</span></label>
+            <select name="aceptaPuntualidad" required>
+              <option value="">Seleccionar</option>
+              <option>Sí, confirmo llegar puntualmente</option>
+              <option>Necesito confirmar horario</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Logística de equipaje en panel/remolque <span class="required">*</span></label>
+            <select name="aceptaRemolque" required>
+              <option value="">Seleccionar</option>
+              <option>Acepto que la mayoría del equipo y equipaje se acomode en el remolque</option>
+              <option>Necesito informar algo especial sobre mi equipaje</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>9. Comprobante de pago</legend>
+        <p class="section-note">Adjunta el comprobante de pago para integrar tu registro. Puede ser imagen o PDF.</p>
+        <div class="grid">
+          <div>
+            <label>Forma de pago <span class="required">*</span></label>
+            <select name="formaPago" required>
+              <option value="">Seleccionar</option>
+              <option>Transferencia</option>
+              <option>Depósito</option>
+              <option>Efectivo</option>
+              <option>Pago pendiente</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div>
+            <label>Monto pagado <span class="required">*</span></label>
+            <input name="montoPagado" type="number" min="0" step="0.01" required placeholder="Ej. 19260.00">
+          </div>
+          <div>
+            <label>Fecha de pago</label>
+            <input name="fechaPago" type="date">
+          </div>
+          <div>
+            <label>Referencia / notas de pago</label>
+            <input name="referenciaPago" placeholder="Ej. folio, banco, últimos dígitos o nota">
+          </div>
+          <div class="full">
+            <label>Comprobante de pago <span class="required">*</span></label>
+            <input id="comprobantePago" name="comprobantePago" type="file" accept="image/*,.pdf" required>
+            <div class="file-note">Tamaño recomendado máximo: 8 MB. Formatos sugeridos: PDF, JPG o PNG.</div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>10. Autorizaciones y responsiva</legend>
+        <div class="notice danger">
+          Declaro que la información proporcionada es verdadera y que informaré al organizador si cambia mi estado de salud,
+          equipo disponible o participación en rutas antes del evento.
+        </div>
+        <label class="radio-row">
+          <input type="checkbox" name="autorizaDatos" value="Sí autoriza" required>
+          Autorizo el uso de mis datos para fines de logística, seguridad, contacto de emergencia y operación del evento.
+        </label>
+        <label class="radio-row">
+          <input type="checkbox" name="aceptaResponsiva" value="Sí acepta" required>
+          Acepto seguir las indicaciones del guía/organizador, respetar el mínimo impacto ambiental, portar mi equipo personal
+          y reconocer que las rutas son opcionales.
+        </label>
+        <div class="full" style="margin-top:14px;">
+          <label>Observaciones adicionales</label>
+          <textarea name="observaciones" placeholder="Agrega cualquier dato importante que el organizador deba saber."></textarea>
+        </div>
+        <div id="status"></div>
+        <div class="actions">
+          <button type="reset" class="secondary" id="resetBtn">Limpiar formulario</button>
+          <button type="submit" class="primary" id="submitBtn">Enviar registro</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <section id="thankYouPage" class="thank-you-page">
+      <div class="thank-you-card">
+        <h2>¡Gracias por enviar tu información!</h2>
+        <p>
+          Tu registro fue recibido correctamente. También se enviaron las indicaciones generales del campamento
+          al correo que proporcionaste.
+        </p>
+        <div class="folio" id="folioFinal">Folio: --</div>
+        <p>Para enviar otro registro será necesario volver a cargar la página.</p>
+        <p>Nos vemos para disfrutar San Pedro Mártir cuidando el medio ambiente.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById("registroForm");
+    const statusBox = document.getElementById("status");
+    const submitBtn = document.getElementById("submitBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const thankYouPage = document.getElementById("thankYouPage");
+    const folioFinal = document.getElementById("folioFinal");
+
+    let alreadySubmitted = false;
+
+    function formToObject(formElement) {
+      const data = new FormData(formElement);
+      const obj = {};
+
+      for (const [key, value] of data.entries()) {
+        if (value instanceof File) continue;
+
+        if (obj[key]) {
+          if (!Array.isArray(obj[key])) obj[key] = [obj[key]];
+          obj[key].push(value);
+        } else {
+          obj[key] = value;
+        }
+      }
+
+      return obj;
+    }
+
+    function fileToBase64(file) {
+      return new Promise(function (resolve, reject) {
+        if (!file) {
+          resolve(null);
+          return;
+        }
+
+        const maxSizeMb = 8;
+        const maxSizeBytes = maxSizeMb * 1024 * 1024;
+
+        if (file.size > maxSizeBytes) {
+          reject(new Error("El comprobante supera el tamaño máximo de " + maxSizeMb + " MB."));
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function () {
+          const result = String(reader.result || "");
+          const base64 = result.includes(",") ? result.split(",")[1] : result;
+          resolve({
+            filename: file.name,
+            mimeType: file.type || "application/octet-stream",
+            data: base64
+          });
+        };
+        reader.onerror = function () {
+          reject(new Error("No se pudo leer el archivo del comprobante."));
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function showStatus(type, message) {
+      statusBox.className = type;
+      statusBox.textContent = message;
+      if (message) statusBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function setLoading(isLoading) {
+      submitBtn.disabled = isLoading;
+      resetBtn.disabled = isLoading;
+      submitBtn.textContent = isLoading ? "Guardando..." : "Enviar registro";
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      if (alreadySubmitted) return;
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      alreadySubmitted = true;
+      setLoading(true);
+      showStatus("", "");
+
+      try {
+        const payload = formToObject(form);
+        const fileInput = document.getElementById("comprobantePago");
+        payload.comprobantePago = await fileToBase64(fileInput.files[0]);
+
+        google.script.run
+          .withSuccessHandler(function (response) {
+            if (response && response.ok) {
+              folioFinal.textContent = "Folio: " + response.folio;
+              form.style.display = "none";
+              thankYouPage.style.display = "flex";
+              history.replaceState(null, "", "#gracias");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            } else {
+              alreadySubmitted = false;
+              setLoading(false);
+              showStatus("error", "No se pudo guardar el registro: " + (response ? response.message : "Error desconocido"));
+            }
+          })
+          .withFailureHandler(function (error) {
+            alreadySubmitted = false;
+            setLoading(false);
+            showStatus("error", "Error al guardar: " + (error.message || error));
+          })
+          .saveRegistro(payload);
+
+      } catch (error) {
+        alreadySubmitted = false;
+        setLoading(false);
+        showStatus("error", error.message || String(error));
+      }
+    });
+  </script>
+</body>
+</html>
