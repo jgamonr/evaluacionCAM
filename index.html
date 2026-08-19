@@ -276,8 +276,9 @@
       </div>
 
       <a 
+        id="enlace-manual"
         class="manual-link" 
-        href="https://forms.gle/8ZvUcHz6MwHSBF8p8"
+        href="https://forms.gle/dZq8bpfr1kEmU1MZ8"
       >
         Ir al formulario ahora
       </a>
@@ -286,11 +287,170 @@
   </main>
 
   <script>
-    const formularioEvaluacion = "https://forms.gle/dZq8bpfr1kEmU1MZ8";
+    /*
+      HOJA ESPERADA (primera pestaña o la indicada por gid):
 
-    setTimeout(() => {
-      window.location.href = formularioEvaluacion;
-    }, 7000);
+      clave        | enlace
+      evaluacion   | https://forms.gle/...
+      examen       | https://forms.gle/...
+
+      Pega en URL_HOJA el enlace de Google Sheets publicado en la web como CSV.
+      También se acepta el enlace normal de una hoja con acceso público.
+    */
+    const URL_HOJA = "PEGA_AQUI_EL_ENLACE_PUBLICO_DE_GOOGLE_SHEETS";
+    const CLAVE_ENLACE = "evaluacion";
+    const ENLACE_RESPALDO = "https://forms.gle/dZq8bpfr1kEmU1MZ8";
+    const TIEMPO_REDIRECCION = 7000;
+
+    const enlaceManual = document.getElementById("enlace-manual");
+    const textoRedireccion = document.querySelector(".redirect-text");
+    const inicio = Date.now();
+
+    enlaceManual.href = ENLACE_RESPALDO;
+
+    function normalizarTexto(valor) {
+      return String(valor ?? "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function convertirHojaACsv(urlHoja) {
+      const valor = String(urlHoja || "").trim();
+
+      if (!valor || valor.includes("PEGA_AQUI")) {
+        return "";
+      }
+
+      const url = new URL(valor);
+
+      if (url.hostname === "docs.google.com") {
+        const publicada = url.pathname.match(/\/spreadsheets\/d\/e\/([^/]+)/);
+
+        if (publicada) {
+          url.pathname = url.pathname.replace(/\/pubhtml\/?$/, "/pub");
+          url.searchParams.set("output", "csv");
+          return url.toString();
+        }
+
+        const normal = url.pathname.match(/\/spreadsheets\/d\/([^/]+)/);
+
+        if (normal) {
+          const gidEnHash = url.hash.match(/gid=(\d+)/);
+          const gid = url.searchParams.get("gid") || gidEnHash?.[1] || "0";
+          return `https://docs.google.com/spreadsheets/d/${normal[1]}/export?format=csv&gid=${gid}`;
+        }
+      }
+
+      return valor;
+    }
+
+    function leerCsv(texto) {
+      const filas = [];
+      let fila = [];
+      let campo = "";
+      let entreComillas = false;
+
+      for (let i = 0; i < texto.length; i += 1) {
+        const caracter = texto[i];
+
+        if (caracter === '"') {
+          if (entreComillas && texto[i + 1] === '"') {
+            campo += '"';
+            i += 1;
+          } else {
+            entreComillas = !entreComillas;
+          }
+        } else if (caracter === "," && !entreComillas) {
+          fila.push(campo);
+          campo = "";
+        } else if ((caracter === "\n" || caracter === "\r") && !entreComillas) {
+          if (caracter === "\r" && texto[i + 1] === "\n") i += 1;
+          fila.push(campo);
+          if (fila.some((celda) => celda.trim() !== "")) filas.push(fila);
+          fila = [];
+          campo = "";
+        } else {
+          campo += caracter;
+        }
+      }
+
+      fila.push(campo);
+      if (fila.some((celda) => celda.trim() !== "")) filas.push(fila);
+      return filas;
+    }
+
+    function obtenerEnlace(textoCsv, claveBuscada) {
+      const filas = leerCsv(textoCsv);
+      if (!filas.length) throw new Error("La hoja está vacía.");
+
+      const encabezados = filas[0].map(normalizarTexto);
+      const nombresClave = ["clave", "pagina", "tipo", "nombre"];
+      const nombresEnlace = ["enlace", "link", "url", "formulario"];
+      let columnaClave = encabezados.findIndex((valor) => nombresClave.includes(valor));
+      let columnaEnlace = encabezados.findIndex((valor) => nombresEnlace.includes(valor));
+      let primeraFilaDatos = 1;
+
+      if (columnaClave < 0 || columnaEnlace < 0) {
+        columnaClave = 0;
+        columnaEnlace = 1;
+        primeraFilaDatos = 0;
+      }
+
+      const filaEncontrada = filas
+        .slice(primeraFilaDatos)
+        .find((filaActual) => normalizarTexto(filaActual[columnaClave]) === normalizarTexto(claveBuscada));
+
+      const enlace = filaEncontrada?.[columnaEnlace]?.trim();
+      if (!enlace) throw new Error(`No se encontró la clave "${claveBuscada}".`);
+
+      const url = new URL(enlace);
+      if (!/^https?:$/.test(url.protocol)) throw new Error("El enlace no es válido.");
+      return url.toString();
+    }
+
+    function programarRedireccion(enlace) {
+      enlaceManual.href = enlace;
+      const tiempoRestante = Math.max(500, TIEMPO_REDIRECCION - (Date.now() - inicio));
+
+      setTimeout(() => {
+        window.location.replace(enlace);
+      }, tiempoRestante);
+    }
+
+    async function cargarFormularioVigente() {
+      const urlCsv = convertirHojaACsv(URL_HOJA);
+
+      if (!urlCsv) {
+        textoRedireccion.textContent = "Redireccionando automáticamente al formulario de evaluación...";
+        programarRedireccion(ENLACE_RESPALDO);
+        return;
+      }
+
+      const controlador = new AbortController();
+      const limite = setTimeout(() => controlador.abort(), 5000);
+
+      try {
+        const respuesta = await fetch(urlCsv, {
+          cache: "no-store",
+          signal: controlador.signal
+        });
+
+        if (!respuesta.ok) throw new Error(`Respuesta ${respuesta.status}`);
+        const enlaceVigente = obtenerEnlace(await respuesta.text(), CLAVE_ENLACE);
+        textoRedireccion.textContent = "Formulario vigente localizado. Redireccionando...";
+        programarRedireccion(enlaceVigente);
+      } catch (error) {
+        console.warn("No fue posible leer el enlace desde Google Sheets.", error);
+        textoRedireccion.textContent = "Redireccionando al formulario disponible...";
+        programarRedireccion(ENLACE_RESPALDO);
+      } finally {
+        clearTimeout(limite);
+      }
+    }
+
+    cargarFormularioVigente();
   </script>
 
 </body>
